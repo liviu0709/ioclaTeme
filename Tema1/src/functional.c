@@ -129,8 +129,27 @@ array_t map_multiple(void (*func)(void *, void **),
 
 void *reduce_multiple(void(*func)(void *, void **), void *acc, int varg_c, ...)
 {
-	(void)func;
-	(void)acc;
-	(void)varg_c;
-	return NULL;
+	va_list liste_in;
+	array_t *list;
+	if (varg_c > 0)
+		list = (array_t *)malloc(sizeof(array_t) * varg_c);
+	int minim = -1;
+	va_start(liste_in, varg_c);
+	for (int i = 0 ; i < varg_c ; i++) {
+		list[i] = va_arg(liste_in, array_t);
+		if (minim == -1)
+			minim = list[i].len;
+		if (minim > list[i].len)
+			minim = list[i].len;
+	}
+	for (int i = 0 ; i < minim ; i++) {
+		void **vector = malloc(sizeof(void *) * varg_c);
+		for (int j = 0 ; j < varg_c ; j++)
+			vector[j] = list[j].data + i * list[j].elem_size;
+		func(acc, vector);
+		free(vector);
+	}
+	va_end(liste_in);
+	free(list);
+	return acc;
 }
