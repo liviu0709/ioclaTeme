@@ -133,4 +133,6 @@ array_t map_multiple(void (*func)(void *, void **),
 void *reduce_multiple(void (*func)(void *, void **),
 					  void *acc, int varg_c, ...);
 
+array_t aloc(void (*destruct)(void *), int len, int size);
+
 #endif // FUNCTIONAL_H

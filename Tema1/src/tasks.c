@@ -5,9 +5,36 @@
 #include <string.h>
 #include <stdio.h>
 
+void swap_int(void* ceva, void* altceva) {
+	int *x = (int*)ceva;
+	int *y = (int*)altceva;
+	int aux = *x;
+	*x = *y;
+	*y = aux;
+}
+
+void copy_int(void** dst) {
+	int *x = (int*)dst[0];
+	int *y = (int*)dst[1];
+	*y = *x;
+}
+
+void print_int(void *elem) {
+	int *x = (int*)elem;
+	printf("%d ", *x);
+}
+
 array_t reverse(array_t list) {
-	(void)list;
-	return (array_t){0};
+	array_t sol = aloc(NULL, list.len, list.elem_size);
+	// for_each(print_int, list);
+	// printf("----\n");
+	for_each_multiple(copy_int, 2, list, sol);
+	for (int i = 0 ; i < sol.len / 2 ; i++)
+		swap_int(sol.data + i * sol.elem_size, sol.data + (sol.len - i - 1) * sol.elem_size);
+	// printf("----\n");
+	// for_each(print_int, list);
+	// printf("----\n");
+	return sol;
 }
 
 array_t create_number_array(array_t integer_part, array_t fractional_part) {
