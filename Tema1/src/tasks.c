@@ -38,38 +38,17 @@ array_t reverse(array_t list) {
 	return sol;
 }
 
-int nr_cif(int x) {
-	if (x < 10)
-		return 1;
-	else
-		return 1 + nr_cif(x / 10);
-}
-
-char *int_to_string(int x) {
-	int n = nr_cif(x);
-	char *sol = malloc(n + 1);
-	sol[n] = '\0';
-	for (int i = n - 1 ; i >= 0 ; i--) {
-		sol[i] = x % 10 + '0';
-		x /= 10;
-	}
-	return sol;
-}
-
 void map_number_t(void *new, void **data) {
+	int nr_cif_max_int = 10;
 	int *re = (int *)data[0];
 	int *virg = (int *)data[1];
 	number_t *nr = (number_t *)new;
 	nr->integer_part = *re;
 	nr->fractional_part = *virg;
-	nr->string = calloc(nr_cif(*re) + nr_cif(*virg) + 2, 1);
-	char *st = int_to_string(*re);
-	char *dr = int_to_string(*virg);
-	strcat(nr->string, st);
-	strcat(nr->string, ".");
-	strcat(nr->string, dr);
-	free(st);
-	free(dr);
+	nr->string = malloc(nr_cif_max_int * 2 + 2);
+	snprintf(nr->string, nr_cif_max_int * 2 + 2, "%d.%d", *re, *virg);
+	nr->string[strlen(nr->string)] = '\0';
+	nr->string = realloc(nr->string, strlen(nr->string) + 1);
 }
 
 void destructor_number_t(void *x) {
