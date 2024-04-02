@@ -57,15 +57,49 @@ void destructor_number_t(void *x) {
 }
 
 array_t create_number_array(array_t integer_part, array_t fractional_part) {
-	array_t sol = map_multiple(map_number_t, 2 * sizeof(int) + sizeof(char *),
-							   destructor_number_t, 2, integer_part,
-							   fractional_part);
-	return sol;
+	return map_multiple(map_number_t, sizeof(student_t),
+						destructor_number_t, 2, integer_part, fractional_part);
+}
+
+// void destructor_student(void *x) {
+// 	student_t *rip = (student_t *)x;
+// 	free(rip->name);
+// }
+
+boolean are_nota_trecere(void *x) {
+	student_t *stud = (student_t *)x;
+	return stud->grade > 5.0;
+}
+
+void print_stud(void *elem) {
+	student_t *x = (student_t *)elem;
+	printf("Nota:%s\n", x->name);
+}
+
+void char_destructor(void *elem) {
+	free(*(char **)elem);
+}
+
+void stud_to_str(void *new, void *old) {
+	student_t *old_data = (student_t *)old;
+	//printf("Rip\n");
+	char *data = malloc(sizeof(char) * (strlen(old_data->name) + 1));
+	strcpy(data, old_data->name);
+	//printf("Nume: %s\n", data);
+	*(char **)new = data;
+}
+
+void print_str(void *data) {
+	printf("Rip?: %s\n", *(char**)data);
 }
 
 array_t get_passing_students_names(array_t list) {
-	(void)list;
-	return (array_t){0};
+	// for_each(print_stud, list);
+	array_t filtered = filter(are_nota_trecere, list);
+	//for_each(print_stud, filtered);
+	array_t sol = map(stud_to_str, sizeof(char*), char_destructor, filtered);
+	//for_each(print_str, sol);
+	return sol;
 }
 
 array_t check_bigger_sum(array_t list_list, array_t int_list) {

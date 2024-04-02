@@ -5,6 +5,8 @@
 
 #include <stdio.h>
 
+#include "tasks.h"
+
 array_t aloc(void (*destruct)(void *), int len, int size) {
 	array_t list;
 	list.destructor = destruct;
@@ -54,9 +56,10 @@ array_t filter(boolean(*func)(void *), array_t list)
 										list.elem_size * nr_elem);
 			memcpy(new_list.data + new_list.elem_size * (nr_elem - 1),
 				   list.data + i * list.elem_size, list.elem_size);
+		} else {
+			if (list.destructor)
+				list.destructor(list.data + i * list.elem_size);
 		}
-		if (list.destructor)
-			list.destructor(list.data + i * list.elem_size);
 	}
 	new_list.len = nr_elem;
 	free(list.data);
