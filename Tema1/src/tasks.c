@@ -157,9 +157,43 @@ array_t check_bigger_sum(array_t list_list, array_t int_list) {
 	return map_multiple(map_sum, sizeof(boolean), NULL, 2, sums, int_list);
 }
 
+typedef struct {
+	int indice;
+	array_t list;
+} stringurile_vietii;
+
+void get_nr_elem(void *acc, void *elem) {
+	stringurile_vietii *x = (stringurile_vietii *)acc;
+	if ( x->indice % 2 == 0 ) {
+		x->list.len++;
+		// printf("cica trb sa te adaug..\n");
+		char *s = *(char **)elem;
+		// printf("%s\n", s);
+		if (x->list.data == NULL)
+			x->list.data = malloc(sizeof(char*));
+		else
+			x->list.data = realloc(x->list.data, sizeof(char*) * x->list.len);
+		memcpy(x->list.data + (x->list.len - 1) * sizeof(char*), &s, sizeof(s));
+	} else
+		free(*(char **)elem);
+	x->indice = x->indice + 1;
+}
+
 array_t get_even_indexed_strings(array_t list) {
-	(void)list;
-	return (array_t){0};
+	//array_t nrIndex = aloc(NULL, list.len, sizeof(int));
+	stringurile_vietii meh;
+	meh.indice = 0;
+	meh.list.data = NULL;
+	meh.list.elem_size = sizeof(char*);
+	meh.list.len = 0;
+	meh.list.destructor = char_destructor;
+	// for_each(print_str, list);
+	reduce(get_nr_elem, &meh, list);
+	free(list.data);
+	// printf("Numar stringuri:%d\n", list.len);
+	// for_each(print_str, meh.list);
+	// array_t filtrat = filter(conditie, list);
+	return meh.list;
 }
 
 array_t generate_square_matrix(int n) {
