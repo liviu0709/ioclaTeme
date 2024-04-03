@@ -27,15 +27,15 @@ void print_int(void *elem) {
 void rotate(void *acc, void *elem) {
 	array_t *acum = (array_t *)acc;
 	if ( acum->data ) {
-		int old_size = acum->len * sizeof(int);
+		int old_size = acum->len * acum->elem_size;
 		void *aux = malloc(old_size);
 		memcpy(aux, acum->data, old_size);
-		acum->data = realloc(acum->data, sizeof(int) + old_size);
-		memcpy(acum->data + sizeof(int), aux, old_size);
+		acum->data = realloc(acum->data, acum->elem_size + old_size);
+		memcpy(acum->data + acum->elem_size, aux, old_size);
 		acum->len++;
 		free(aux);
 	} else {
-		acum->data = malloc(sizeof(int));
+		acum->data = malloc(acum->elem_size);
 		acum->len = 1;
 	}
 	// Smth going on over here
@@ -48,10 +48,10 @@ array_t reverse(array_t list) {
 	// for_each(print_int, list);
 	// printf("----\n");
 	sol.data = NULL;
+	sol.elem_size = list.elem_size;
 	reduce(rotate, (void *)&sol, list);
 	sol.len = list.len;
-	sol.elem_size = list.elem_size;
-	sol.destructor = NULL;
+	sol.destructor = list.destructor;
 	// printf("----\n");
 	// for_each(print_int, list);
 	// printf("----\n");
@@ -124,10 +124,37 @@ array_t get_passing_students_names(array_t list) {
 	return sol;
 }
 
+void adding_up(void *sum, void *elem) {
+	int *s = (int *)sum;
+	int *element = (int *)elem;
+	*s = *s + *element;
+	// printf("Suma este %d\n", *s);
+}
+
+void count(void *new, void *old) {
+	array_t *list = (array_t *)old;
+	//printf("Lista:\n");
+	//for_each(print_int, *list);
+	//printf("\n");
+	int *x = (int *)new;
+	*x = 0;
+	reduce(adding_up, new, *list);
+	//printf("Val new: %d\n", *(int *)new);
+}
+
+void map_sum(void *new, void **data) {
+	int *sum_found = (int *)data[0];
+	int *sum_expected = (int *)data[1];
+	boolean *este_ok  = (boolean *)new;
+	if (*sum_found >= *sum_expected)
+		*este_ok = true;
+	else
+		*este_ok = false;
+}
+
 array_t check_bigger_sum(array_t list_list, array_t int_list) {
-	(void)list_list;
-	(void)int_list;
-	return (array_t){0};
+	array_t sums = map(count, sizeof(int), NULL, list_list);
+	return map_multiple(map_sum, sizeof(boolean), NULL, 2, sums, int_list);
 }
 
 array_t get_even_indexed_strings(array_t list) {
