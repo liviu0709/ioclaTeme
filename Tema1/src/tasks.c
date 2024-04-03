@@ -26,7 +26,7 @@ void print_int(void *elem) {
 
 void rotate(void *acc, void *elem) {
 	array_t *acum = (array_t *)acc;
-	if ( acum->data ) {
+	if (acum->data) {
 		int old_size = acum->len * acum->elem_size;
 		void *aux = malloc(old_size);
 		memcpy(aux, acum->data, old_size);
@@ -81,11 +81,6 @@ array_t create_number_array(array_t integer_part, array_t fractional_part) {
 						destructor_number_t, 2, integer_part, fractional_part);
 }
 
-// void destructor_student(void *x) {
-// 	student_t *rip = (student_t *)x;
-// 	free(rip->name);
-// }
-
 boolean are_nota_trecere(void *x) {
 	student_t *stud = (student_t *)x;
 	return stud->grade > 5.0;
@@ -112,14 +107,14 @@ void stud_to_str(void *new, void *old) {
 }
 
 void print_str(void *data) {
-	printf("Rip?: %s\n", *(char**)data);
+	printf("Rip?: %s\n", *(char **)data);
 }
 
 array_t get_passing_students_names(array_t list) {
 	// for_each(print_stud, list);
 	array_t filtered = filter(are_nota_trecere, list);
 	//for_each(print_stud, filtered);
-	array_t sol = map(stud_to_str, sizeof(char*), char_destructor, filtered);
+	array_t sol = map(stud_to_str, sizeof(char *), char_destructor, filtered);
 	//for_each(print_str, sol);
 	return sol;
 }
@@ -164,18 +159,20 @@ typedef struct {
 
 void copy_even_str(void *acc, void *elem) {
 	stringurile_vietii *x = (stringurile_vietii *)acc;
-	if ( x->indice % 2 == 0 ) {
+	if (x->indice % 2 == 0) {
 		x->list.len++;
 		// printf("cica trb sa te adaug..\n");
 		char *s = *(char **)elem;
 		// printf("%s\n", s);
-		if (x->list.data == NULL)
-			x->list.data = malloc(sizeof(char*));
+		if (!x->list.data)
+			x->list.data = malloc(sizeof(char *));
 		else
-			x->list.data = realloc(x->list.data, sizeof(char*) * x->list.len);
-		memcpy(x->list.data + (x->list.len - 1) * sizeof(char*), &s, sizeof(s));
-	} else
+			x->list.data = realloc(x->list.data, sizeof(char *) * x->list.len);
+		memcpy(x->list.data + (x->list.len - 1) * sizeof(char *),
+			   &s, sizeof(s));
+	} else {
 		free(*(char **)elem);
+	}
 	x->indice = x->indice + 1;
 }
 
@@ -184,7 +181,7 @@ array_t get_even_indexed_strings(array_t list) {
 	stringurile_vietii meh;
 	meh.indice = 0;
 	meh.list.data = NULL;
-	meh.list.elem_size = sizeof(char*);
+	meh.list.elem_size = sizeof(char *);
 	meh.list.len = 0;
 	meh.list.destructor = char_destructor;
 	// for_each(print_str, list);
@@ -195,7 +192,6 @@ array_t get_even_indexed_strings(array_t list) {
 	// array_t filtrat = filter(conditie, list);
 	return meh.list;
 }
-
 
 void gen_line(void *data, void *elem) {
 	//printf("Ati ajuns la dst");
@@ -208,7 +204,7 @@ void gen_line(void *data, void *elem) {
 
 void gen_data(void *acc, void *elem) {
 	array_t *x = (array_t *)elem;
-	int n = *(int*)acc;
+	int n = *(int *)acc;
 	//printf("Len array: %d\n", x->len);
 	//printf("N este: %d\n", n);
 	reduce(gen_line, acc, *x);
@@ -221,11 +217,10 @@ void gen_data(void *acc, void *elem) {
 void aloc_line(void *acc, void *elem) {
 	array_t *line = (array_t *)elem;
     //*line = malloc(sizeof(array_t));
-    (line)->data = malloc(sizeof(int) * *(int *)acc);
-    (line)->len = *(int *)acc;
-    (line)->elem_size = sizeof(int);
-    (line)->destructor = NULL;
-	(void) line;
+	(line)->data = malloc(sizeof(int) * *(int *)acc);
+	(line)->len = *(int *)acc;
+	(line)->elem_size = sizeof(int);
+	(line)->destructor = NULL;
 }
 
 void print_len(void *elem) {
