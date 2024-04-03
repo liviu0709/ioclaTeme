@@ -16,12 +16,6 @@ array_t aloc(void (*destruct)(void *), int len, int size) {
 	return list;
 }
 
-void dezaloc(array_t list) {
-	if (list.destructor)
-		for_each(list.destructor, list);
-	free(list.data);
-}
-
 void for_each(void (*func)(void *), array_t list)
 {
 	for (int i = 0 ; i < list.len ; i++)
@@ -124,8 +118,11 @@ array_t map_multiple(void (*func)(void *, void **),
 		func(new_list.data + i * new_list.elem_size, vector);
 		free(vector);
 	}
-	for (int i = 0 ; i < varg_c ; i++)
-		dezaloc(list[i]);
+	for (int i = 0 ; i < varg_c ; i++) {
+		if (list[i].destructor)
+			for_each(list[i].destructor, list[i]);
+		free(list[i].data);
+	}
 	free(list);
 	return new_list;
 }

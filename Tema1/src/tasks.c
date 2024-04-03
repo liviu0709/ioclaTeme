@@ -5,20 +5,6 @@
 #include <string.h>
 #include <stdio.h>
 
-void swap_int(void *ceva, void *altceva) {
-	int *x = (int *)ceva;
-	int *y = (int *)altceva;
-	int aux = *x;
-	*x = *y;
-	*y = aux;
-}
-
-void copy_int(void **dst) {
-	int *x = (int *)dst[0];
-	int *y = (int *)dst[1];
-	*y = *x;
-}
-
 void print_int(void *elem) {
 	// int *x = (int *)elem;
 	printf("%d ", *(int *)elem);
@@ -86,11 +72,6 @@ boolean are_nota_trecere(void *x) {
 	return stud->grade > 5.0;
 }
 
-void print_stud(void *elem) {
-	student_t *x = (student_t *)elem;
-	printf("Nota:%s\n", x->name);
-}
-
 void char_destructor(void *elem) {
 	free(*(char **)elem);
 }
@@ -111,12 +92,8 @@ void print_str(void *data) {
 }
 
 array_t get_passing_students_names(array_t list) {
-	// for_each(print_stud, list);
 	array_t filtered = filter(are_nota_trecere, list);
-	//for_each(print_stud, filtered);
-	array_t sol = map(stud_to_str, sizeof(char *), char_destructor, filtered);
-	//for_each(print_str, sol);
-	return sol;
+	return map(stud_to_str, sizeof(char *), char_destructor, filtered);
 }
 
 void adding_up(void *sum, void *elem) {
@@ -168,10 +145,12 @@ void copy_even_str(void *acc, void *elem) {
 			x->list.data = malloc(sizeof(char *));
 		else
 			x->list.data = realloc(x->list.data, sizeof(char *) * x->list.len);
+		// Copiem strigu ca sa dam free la lista mai tarziu
+		// Nu vrem sa modificam elementemete in reduce
+		char *s_aloc = malloc(strlen(s) + 1);
+		strcpy(s_aloc, s);
 		memcpy(x->list.data + (x->list.len - 1) * sizeof(char *),
-			   &s, sizeof(s));
-	} else {
-		free(*(char **)elem);
+			   &s_aloc, sizeof(s_aloc));
 	}
 	x->indice = x->indice + 1;
 }
@@ -186,6 +165,7 @@ array_t get_even_indexed_strings(array_t list) {
 	meh.list.destructor = char_destructor;
 	// for_each(print_str, list);
 	reduce(copy_even_str, &meh, list);
+	for_each(list.destructor, list);
 	free(list.data);
 	// printf("Numar stringuri:%d\n", list.len);
 	// for_each(print_str, meh.list);
