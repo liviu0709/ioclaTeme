@@ -162,7 +162,7 @@ typedef struct {
 	array_t list;
 } stringurile_vietii;
 
-void get_nr_elem(void *acc, void *elem) {
+void copy_even_str(void *acc, void *elem) {
 	stringurile_vietii *x = (stringurile_vietii *)acc;
 	if ( x->indice % 2 == 0 ) {
 		x->list.len++;
@@ -188,7 +188,7 @@ array_t get_even_indexed_strings(array_t list) {
 	meh.list.len = 0;
 	meh.list.destructor = char_destructor;
 	// for_each(print_str, list);
-	reduce(get_nr_elem, &meh, list);
+	reduce(copy_even_str, &meh, list);
 	free(list.data);
 	// printf("Numar stringuri:%d\n", list.len);
 	// for_each(print_str, meh.list);
@@ -196,7 +196,44 @@ array_t get_even_indexed_strings(array_t list) {
 	return meh.list;
 }
 
+void aloc_matrix_line(void *acc, void *elem) {
+	array_t **x = (array_t **)elem;
+	int *n = (int *)acc;
+	// printf("Am alocat o linie! %d", *n);
+	*x = malloc(sizeof(array_t));
+	(*x)->len = *n;
+	(*x)->data = malloc(sizeof(int) * *n);
+	(*x)->elem_size = sizeof(int);
+	(*x)->destructor = NULL;
+	//printf("Len: %d", (*x)->len);
+}
+
+void gen_line(void *data, void *elem) {
+	printf("Ati ajuns la dst");
+	int *x = (int *)elem;
+	int *nr = (int *)data;
+	*x = *nr;
+	printf("Val lui x este:%d \n", *x);
+	*nr = *nr + 1;
+}
+
+void gen_data(void *acc, void *elem) {
+	array_t *x = (array_t *)elem;
+	int n = *(int*)acc;
+	printf("Len array: %d\n", x->len);
+	printf("N este: %d\n", n);
+	reduce(gen_line, acc, *x);
+	printf("Linie not init:\n");
+	for_each(print_int, *x);
+	printf("\nAsta a fost o linie\n");
+	*(int *)acc = n + 1;
+}
+
 array_t generate_square_matrix(int n) {
-	(void)n;
+	array_t matrix = aloc(NULL, n, sizeof(array_t *));
+	reduce(aloc_matrix_line, &n, matrix);
+	printf("lungime main: %d\n", (((array_t*)matrix.data)->len));
+	n = 1;
+	reduce(gen_data, &n, matrix);
 	return (array_t){0};
 }
