@@ -20,8 +20,8 @@ void copy_int(void **dst) {
 }
 
 void print_int(void *elem) {
-	int *x = (int *)elem;
-	printf("%d ", *x);
+	// int *x = (int *)elem;
+	printf("%d ", *(int *)elem);
 }
 
 void rotate(void *acc, void *elem) {
@@ -196,44 +196,64 @@ array_t get_even_indexed_strings(array_t list) {
 	return meh.list;
 }
 
-void aloc_matrix_line(void *acc, void *elem) {
-	array_t **x = (array_t **)elem;
-	int *n = (int *)acc;
-	// printf("Am alocat o linie! %d", *n);
-	*x = malloc(sizeof(array_t));
-	(*x)->len = *n;
-	(*x)->data = malloc(sizeof(int) * *n);
-	(*x)->elem_size = sizeof(int);
-	(*x)->destructor = NULL;
-	//printf("Len: %d", (*x)->len);
-}
 
 void gen_line(void *data, void *elem) {
-	printf("Ati ajuns la dst");
+	//printf("Ati ajuns la dst");
 	int *x = (int *)elem;
 	int *nr = (int *)data;
 	*x = *nr;
-	printf("Val lui x este:%d \n", *x);
+	//printf("%d ", *x);
 	*nr = *nr + 1;
 }
 
 void gen_data(void *acc, void *elem) {
 	array_t *x = (array_t *)elem;
 	int n = *(int*)acc;
-	printf("Len array: %d\n", x->len);
-	printf("N este: %d\n", n);
+	//printf("Len array: %d\n", x->len);
+	//printf("N este: %d\n", n);
 	reduce(gen_line, acc, *x);
-	printf("Linie not init:\n");
-	for_each(print_int, *x);
-	printf("\nAsta a fost o linie\n");
+	//printf("Linie not init:\n");
+	//for_each(print_int, *x);
+	//printf("\nAsta a fost o linie\n");
 	*(int *)acc = n + 1;
 }
 
+void aloc_line(void *acc, void *elem) {
+	array_t *line = (array_t *)elem;
+    //*line = malloc(sizeof(array_t));
+    (line)->data = malloc(sizeof(int) * *(int *)acc);
+    (line)->len = *(int *)acc;
+    (line)->elem_size = sizeof(int);
+    (line)->destructor = NULL;
+	(void) line;
+}
+
+void print_len(void *elem) {
+	array_t *x = (array_t *)elem;
+	printf("Len: %d\n", x->len);
+}
+
+void destructor_list(void *elem) {
+	array_t *x = (array_t *)elem;
+	free(x->data);
+}
+
+void print_lst(void *elem) {
+	array_t *x = (array_t *)elem;
+	for_each(print_int, *x);
+	printf("\n");
+}
+
 array_t generate_square_matrix(int n) {
-	array_t matrix = aloc(NULL, n, sizeof(array_t *));
-	reduce(aloc_matrix_line, &n, matrix);
-	printf("lungime main: %d\n", (((array_t*)matrix.data)->len));
+	array_t matrix;
+	matrix.data = malloc(n * sizeof(array_t));
+	matrix.destructor = destructor_list;
+	matrix.elem_size = sizeof(array_t);
+	matrix.len = n;
+	reduce(aloc_line, &n, matrix);
 	n = 1;
+	//for_each(print_len, matrix);
 	reduce(gen_data, &n, matrix);
-	return (array_t){0};
+	//for_each(print_lst, matrix);
+	return matrix;
 }
