@@ -24,14 +24,34 @@ void print_int(void *elem) {
 	printf("%d ", *x);
 }
 
+void rotate(void *acc, void *elem) {
+	array_t *acum = (array_t *)acc;
+	if ( acum->data ) {
+		int old_size = acum->len * sizeof(int);
+		void *aux = malloc(old_size);
+		memcpy(aux, acum->data, old_size);
+		acum->data = realloc(acum->data, sizeof(int) + old_size);
+		memcpy(acum->data + sizeof(int), aux, old_size);
+		acum->len++;
+		free(aux);
+	} else {
+		acum->data = malloc(sizeof(int));
+		acum->len = 1;
+	}
+	// Smth going on over here
+	// *((int *)acum->data) = *(int *)elem;
+	memcpy(acum->data, elem, sizeof(int));
+}
+
 array_t reverse(array_t list) {
-	array_t sol = aloc(NULL, list.len, list.elem_size);
+	array_t sol;
 	// for_each(print_int, list);
 	// printf("----\n");
-	for_each_multiple(copy_int, 2, list, sol);
-	for (int i = 0 ; i < sol.len / 2 ; i++)
-		swap_int(sol.data + i * sol.elem_size,
-				 sol.data + (sol.len - i - 1) * sol.elem_size);
+	sol.data = NULL;
+	reduce(rotate, (void *)&sol, list);
+	sol.len = list.len;
+	sol.elem_size = list.elem_size;
+	sol.destructor = NULL;
 	// printf("----\n");
 	// for_each(print_int, list);
 	// printf("----\n");
@@ -86,7 +106,9 @@ void stud_to_str(void *new, void *old) {
 	char *data = malloc(sizeof(char) * (strlen(old_data->name) + 1));
 	strcpy(data, old_data->name);
 	//printf("Nume: %s\n", data);
-	*(char **)new = data;
+	// Copy the pointer of the name...
+	memcpy(new, &data, sizeof(data));
+	//*(char **)new = data;
 }
 
 void print_str(void *data) {
