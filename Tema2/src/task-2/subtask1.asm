@@ -37,20 +37,12 @@ sort_requests:
 
     ;; Your code starts here
     mov edx, 0
-    push edx
-    push ecx
-    push edx
-    push format_int
-    call printf
-    pop eax
-    pop eax
-    pop ecx
-    pop edx
-    mov esi, ecx
+    mov esi, ecx ; init contor nrElem
+    ; sortam vectorul folosind cea mai simpla metoda de sortare
+    ; posibila (bubble sort)
 
-
-outer_loop:
-    dec esi
+outer_loop: ; primul for
+    dec esi ; decrementam contor
     jz done ; cond oprire
     mov edi, ebx ; element curent
     mov edx, esi ; counter loop inner
@@ -68,7 +60,7 @@ inner_loop:
     ; compar prioritatile daca adminii sunt egali
     mov al, [edi + request.prio]
     cmp al, [edi + request.prio + request_size]
-    jg swap ; daca prioritatea e mai mare, fac swap
+    ja swap ; daca prioritatea e mai mare, fac swap
 
     cmp al, [edi + request.prio + request_size] ; daca nu au prioritatea egala, trec mai departe
     jne next
@@ -110,29 +102,27 @@ not_equal:
 swap:
     ; salvez ebx
     push ebx
-    mov ebx, request_size
+    mov ebx, request_size ; contor loop
 swap_loop:
-    mov al, [edi]
-    xchg al, [edi + request_size]
-    mov [edi], al
-    inc edi
-    dec ebx
+    mov al, [edi] ; bit din primul elem
+    xchg al, [edi + request_size] ; schimb bitul din primul elem cu cel din al doilea
+    mov [edi], al ; pun bitul din al doilea elem in primul
+    inc edi ; trec la urmatorul bit
+    dec ebx ; decrementez contorul
     jnz swap_loop
-    sub edi, request_size
-    
+    sub edi, request_size ; revin la primul elem
+
     pop ebx
 
 next:
-    add edi, request_size
-    dec edx
+    add edi, request_size ; trec la urmatorul elem
+    dec edx ; decrementez contorul
     jnz inner_loop
     jmp outer_loop
 
 done:
-
-    mov edx, 0
-    ;mov ecx, 0
-
+    jmp end ; codul de mai jos a fost utilizat pentru debug
+    ; a se ignora
 for:
 
 
@@ -194,7 +184,7 @@ for:
     inc edx
     cmp edx, ecx
     jne for
-
+end:
     ;; Your code ends here
 
     ;; DO NOT MODIFY
