@@ -20,15 +20,18 @@ treyfer_crypt:
 	;; DO NOT MODIFY
 	;; FREESTYLE STARTS HERE
 	;; TODO implement treyfer_crypt
+
     ; save t
     xor eax, eax ; t = 0
     mov al, [esi] ; var t de un byte
-    mov ecx, 0 ; contor cv
+    xor edx, edx ; counter runde
+round:
+    mov ecx, 0 ; contor byte din bloc
 repeat:
     add al, [edi + ecx] ; t = t + byte din key pozitia curenta
     mov al, [sbox + eax] ; t = sbox[t]
     ; adun la t urm byte din bloc
-    cmp ecx, 7
+    cmp ecx, 7 ; 7 -> blocksize 8, 1 -> blocksize 2
     je add_first_byte
     add al, [esi + ecx + 1]
     jmp skip
@@ -39,7 +42,7 @@ skip:
     rol al, 1
 
     ; Byte-ul de pe poziția (i + 1) % block_size din bloc va fi actualizat cu valoarea variabilei t
-    cmp ecx, 7
+    cmp ecx, 7 ; 7 -> blocksize 8, 1 -> blocksize 2
     je update_first_byte
     mov [esi + ecx + 1], al
     jmp skip_update
@@ -50,6 +53,10 @@ skip_update:
     inc ecx
     cmp ecx, 8
     jne repeat
+
+    inc edx
+    cmp edx, 10
+    jne round
 
     	;; FREESTYLE ENDS HERE
 	;; DO NOT MODIFY
