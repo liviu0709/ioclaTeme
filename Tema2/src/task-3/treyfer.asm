@@ -16,10 +16,40 @@ treyfer_crypt:
 	pusha
 
 	mov esi, [ebp + 8] ; plaintext
-	mov edi, [ebp + 12] ; key	
+	mov edi, [ebp + 12] ; key
 	;; DO NOT MODIFY
 	;; FREESTYLE STARTS HERE
 	;; TODO implement treyfer_crypt
+    ; save t
+    xor eax, eax ; t = 0
+    mov al, [esi] ; var t de un byte
+    mov ecx, 0 ; contor cv
+repeat:
+    add al, [edi + ecx] ; t = t + byte din key pozitia curenta
+    mov al, [sbox + eax] ; t = sbox[t]
+    ; adun la t urm byte din bloc
+    cmp ecx, 7
+    je add_first_byte
+    add al, [esi + ecx + 1]
+    jmp skip
+add_first_byte:
+    add al, [esi]
+skip:
+    ; rotim t cu 1 bit la stanga
+    rol al, 1
+
+    ; Byte-ul de pe poziția (i + 1) % block_size din bloc va fi actualizat cu valoarea variabilei t
+    cmp ecx, 7
+    je update_first_byte
+    mov [esi + ecx + 1], al
+    jmp skip_update
+update_first_byte:
+    mov [esi], al
+skip_update:
+
+    inc ecx
+    cmp ecx, 8
+    jne repeat
 
     	;; FREESTYLE ENDS HERE
 	;; DO NOT MODIFY
