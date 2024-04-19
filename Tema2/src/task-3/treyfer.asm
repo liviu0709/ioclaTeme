@@ -24,7 +24,7 @@ treyfer_crypt:
     ; save t
     xor eax, eax ; t = 0
     mov al, [esi] ; var t de un byte
-    xor edx, edx ; counter runde
+    xor edx, edx ; cnt runde
 round:
     mov ecx, 0 ; contor byte din bloc
 repeat:

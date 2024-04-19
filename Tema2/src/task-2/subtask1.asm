@@ -41,13 +41,13 @@ sort_requests:
     ; sortam vectorul folosind cea mai simpla metoda de sortare
     ; posibila (bubble sort)
 
-outer_loop: ; primul for
+first_for: ; primul for
     dec esi ; decrementam contor
     jz done ; cond oprire
     mov edi, ebx ; element curent
     mov edx, esi ; counter loop inner
 
-inner_loop:
+second_for:
     xor eax, eax
     ; compar adminii
     mov al, [edi]
@@ -65,7 +65,7 @@ inner_loop:
     cmp al, [edi + request.prio + request_size] ; daca nu au prioritatea egala, trec mai departe
     jne next
 
-    ; avand prioritate si grad de admin egal, compar user ;/
+    ; avand prioritate si grad de admin egal, compar user :/
     push ecx    ; salvam registrii ca sa nu dea segfault
     push ebx
     push esi
@@ -117,74 +117,12 @@ swap_loop:
 next:
     add edi, request_size ; trec la urmatorul elem
     dec edx ; decrementez contorul
-    jnz inner_loop
-    jmp outer_loop
+    jnz second_for
+    jmp first_for
 
 done:
-    jmp end ; codul de mai jos a fost utilizat pentru debug
-    ; a se ignora
-for:
 
 
-
-    ; check if admin
-    xor eax, eax
-    imul edi, edx, 55 ; 55 = sizeof(request)
-    mov al, [ebx + edi] ; al is 1 byte = sizeof(char) = sizeof(request.admin)
-    push edx
-    push ecx
-    push eax
-    push format_admin
-    call printf
-    pop eax
-    pop eax
-    pop ecx
-    pop edx
-
-    ; get priority
-    xor eax, eax
-    mov al, [ebx + 1 + edi]
-    push edx
-    push ecx
-    push eax
-    push format_prio
-    call printf
-    pop eax
-    pop eax
-    pop ecx
-    pop edx
-
-    ; get passkey
-    mov eax, [ebx + 2 + edi] ; eax = &request.login.passkey
-    push edx
-    push ecx
-    push eax
-    push format_passkey
-    call printf
-    pop eax
-    pop eax
-    pop ecx
-    pop edx
-    ; get username
-    ; lea not mov bcz we need to copy address of username
-    lea eax, [ebx + 4 + edi] ; eax = &request.login.username
-    push edx
-    push ecx
-    push eax
-    push format_user
-    call printf
-    pop eax
-    pop eax
-    pop ecx
-    pop edx
-
-
-
-
-    inc edx
-    cmp edx, ecx
-    jne for
-end:
     ;; Your code ends here
 
     ;; DO NOT MODIFY

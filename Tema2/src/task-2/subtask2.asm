@@ -43,18 +43,18 @@ for:
     xor esi, esi
     imul esi, edx, request_size
     mov ax, [ebx + esi + request.login] ; passkey
-    and ax, 1 ; check if first bite is 1
+    and ax, 1 ; verific daca primul bit este 1
     cmp ax, 1
     jne no_hacker
-    ; check if last bite is 1
+    ; verific daca ultimul bit este 1
     mov ax, [ebx + esi + request.login] ; passkey
     and ax, 0x8000 ; 1000 0000 0000 0000
     cmp ax, 0x8000
     jne no_hacker
-    ; check least significant byte for even numbers of 1
+    ; verificam cei 7 biti din byteul nesemnificativ
     mov ax, [ebx + esi + request.login] ; passkey
     and ax, 0xFE ; 1111 1110
-    ; loop for counting 1
+    ; salvam valorile pt ca seg fault
     push ecx
     push ebx
 
@@ -67,15 +67,15 @@ loop_1:
 ripp:
     shr ax, 1
     inc ecx
-    cmp ecx, 8 ; condition for exit
+    cmp ecx, 8 ; cond iesire
     jne loop_1
 
-    test ebx, 1 ; check if even
+    test ebx, 1 ; verific daca e par
     pop ebx
     pop ecx
     jnz no_hacker
 
-; check most significant byte for odd numbers of 1
+; verificam cei 7 biti din cel mai semnificativ byte pentru 1
     mov ax, [ebx + esi + request.login] ; passkey
     and ax, 0x7F00 ; 0111 1111 0000 0000
     shr ax, 8 ; make 0111 1111 0000 0000 -> 0000 0000 0111 1111
@@ -83,9 +83,8 @@ ripp:
     push ecx
     push ebx
 
-    ; loop for counting 1
-    xor ecx, ecx ; counter for iter
-    xor ebx, ebx ; counter for 1s
+    xor ecx, ecx ; cnt iter
+    xor ebx, ebx ; cnt 1
 loop_2:
     test ax, 1
     jz ripp_2
@@ -93,22 +92,22 @@ loop_2:
 ripp_2:
     inc ecx
     shr ax, 1
-    cmp ecx, 8 ; condition for exit
+    cmp ecx, 8 ; cond iesire
     jne loop_2
 
-    test ebx, 1 ; check if odd
+    test ebx, 1 ; verificare paritate
     pop ebx
     pop ecx
-    jz no_hacker ; if no odd, he legit
+    jz no_hacker ; daca nu e impar, nu e hacker
 
-    ; set the byte to 1 in sol vector
+    ; salvam rez hacker
     pop eax
     mov [eax + edx], byte 1
     jmp skip_pop
 
 no_hacker:
     pop eax
-    mov [eax + edx], byte 0 ; set the byte to 0 in sol vector
+    mov [eax + edx], byte 0 ; salvam rez non hacker
 skip_pop:
     inc edx ; conditii de iesire
     cmp edx, ecx

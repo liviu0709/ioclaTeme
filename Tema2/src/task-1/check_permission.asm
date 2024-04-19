@@ -5,9 +5,6 @@ extern ant_permissions
 extern printf
 global check_permission
 
-section .data
-    format_int db "Int: %u", 10, 0
-
 section .text
 
 check_permission:
