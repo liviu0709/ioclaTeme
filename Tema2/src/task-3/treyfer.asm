@@ -70,10 +70,47 @@ treyfer_dcrypt:
 	push ebp
 	mov ebp, esp
 	pusha
+
+    mov esi, [ebp + 8] ; plaintext
+	mov edi, [ebp + 12] ; key
 	;; DO NOT MODIFY
 	;; FREESTYLE STARTS HERE
 	;; TODO implement treyfer_dcrypt
+    xor ebx, ebx ; counter runde
+runde:
+    mov ecx, 7 ; contor byte din bloc
+for:
+    xor eax, eax
+    xor edx, edx
+    mov al, [esi + ecx] ; un byte criptat
+    add al, [edi + ecx] ; byte + byte din key pozitia curenta
+    mov al, [sbox + eax] ; sbox[byte modificat pozitia curenta]
+    cmp ecx, 7
+    je add_first_byte2
+    mov dl, [esi + ecx + 1] ; byte-ul urmator din bloc
+    jmp skip2
+add_first_byte2:
+    mov dl, [esi] ; byte-ul urmator din bloc
+skip2:
+    ror dl, 1 ; rotim byte-ul urmator cu 1 bit la dreapta
+    sub dl, al ; buttom - top
+    ; salvam byte-ul decriptat
+    cmp ecx, 7
+    je update_first_byte2
+    mov [esi + ecx + 1], dl
+    jmp skip_update2
+update_first_byte2:
+    mov [esi], dl
+skip_update2:
 
+
+    dec ecx ; conditii oprire for
+    cmp ecx, -1 ; verificam daca am parcurs primul byte (ecx = 0 -> decrementat -> -1)
+    jne for
+
+    inc ebx
+    cmp ebx, 10 ; conditii oprire runde
+    jne runde
 	;; FREESTYLE ENDS HERE
 	;; DO NOT MODIFY
 	popa
