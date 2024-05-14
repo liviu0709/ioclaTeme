@@ -7,12 +7,38 @@
 section .text
 global map
 global reduce
+; void map(int64_t *destination_array, int64_t *source_array, int64_t array_size, int64_t(*f)(int64_t));
+; int64_t map_func1(int64_t curr_elem);
 map:
     ; look at these fancy registers
     push rbp
     mov rbp, rsp
 
+    ; rdi -> dst arr
+    ; rsi -> src arr
+    ; rdx -> arr size
+    ; rcx -> f
+
     ; sa-nceapa turneu'
+    mov r8, 0
+for:
+    cmp r8, rdx
+    jge end_for
+
+    push rdi
+    ; load current element
+    mov rdi, [rsi + 8 * r8]
+    call rcx
+    ; solution is in rax
+    pop rdi
+    ; move sol to dst
+    mov [rdi + 8 * r8], rax
+
+    inc r8
+    jmp for
+
+end_for:
+    ;popaq
 
     leave
     ret
@@ -25,7 +51,39 @@ reduce:
     push rbp
     mov rbp, rsp
 
+    ; rdi -> dst arr ; -> useless ?
+    ; rsi -> src arr
+    ; rdx -> arr size
+    ; rcx -> acc
+    ; r8 -> f
+
+    mov r9, 0
+foor:
+    cmp r9, rdx
+    jge end_foor
+
+    mov rax, [rsi + 8 * r9]
+    ; some registers need to be saved
+    ; bcz they are modified
+    ; why? Irrelevant
+    push rdx
+    push rdi
+    push rsi
+    mov rsi, rax ; current elem
+    mov rdi, rcx ; acc
+    call r8
+    mov rcx, rax ; save new acc
+    pop rsi
+    pop rdi
+    pop rdx
+
+    inc r9
+    jmp foor
+
     ; sa-nceapa festivalu'
+end_foor:
+    mov rax, rcx ; return solution
+    ;popaq
 
     leave
     ret
