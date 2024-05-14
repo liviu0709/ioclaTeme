@@ -10,29 +10,41 @@ quick_sort:
     ;; save the preserved registers
     pusha
     ;; recursive qsort implementation goes here
-    mov eax, [ebp + 8] ; array
-    mov ebx, [ebp + 12] ; start
-    mov ecx, [ebp + 16] ; end
+    ; array
+    mov eax, [ebp + 8]
+    ; start
+    mov ebx, [ebp + 12]
+    ; end
+    mov ecx, [ebp + 16]
 
-    cmp ebx, ecx ; condition to stop
+    ; condition to stop
+    cmp ebx, ecx
     ; (one element cant be sorted)
     jge stop
 
-    push ecx ; save end
-    push ebx ; save start
-    mov edx, ebx ; index
+    ; save end
+    push ecx
+    ; save start
+    push ebx
+    ; index
+    mov edx, ebx
 
 for:
     ; condition to swap
+    ; arr[edx]
     mov edi, [eax + 4 * edx]
+    ; arr[ecx]
     cmp edi, [eax + 4 * ecx]
     jge no_swap
 
     ; swapping arr[edx] with arr[ebx]
     push edi
+    ; arr[ebx]
     mov edi, [eax + 4 * ebx]
+    ; arr[edx]
     mov [eax + 4 * edx], edi
     pop edi
+    ; arr[ebx]
     mov [eax + 4 * ebx], edi
     inc ebx
 no_swap:
@@ -42,37 +54,55 @@ no_swap:
 
 
 ; swap pivot with arr[ebx]
+    ; arr[ebx]
     mov edi, [eax + 4 * ebx]
     push edi
+    ; arr[ecx]
     mov edi, [eax + 4 * ecx]
+    ; arr[ebx]
     mov [eax + 4 * ebx], edi
     pop edi
+    ; arr[ecx]
     mov [eax + 4 * ecx], edi
 
 ; split array
-    mov edx, ebx ; pivot
-    pop ebx ; start first call
-    pop ecx ; stop last call
+    ; pivot
+    mov edx, ebx
+    ; start first call
+    pop ebx
+    ; stop last call
+    pop ecx
 ; check if array has more than 2 elems otherwise we finish
-    dec edx ; dont include pivot
+    ; dont include pivot
+    dec edx
 
-    cmp edx, ecx ; if we called the func with the same data we send to recursivity
+    ; if we called the func with the same data we send to recursivity
+    cmp edx, ecx
     ; just stop
     je stop
 
-    push edx ; stop
-    push ebx ; start
-    push eax ; array
+    ; stop
+    push edx
+    ; start
+    push ebx
+    ; array
+    push eax
     call quick_sort
+    ; clear stack
     add esp, 12
 
     inc edx
-    inc edx ; dont include pivot
+    ; dont include pivot
+    inc edx
 
-    push ecx ; stop
-    push edx ; start
-    push eax ; array
+    ; stop
+    push ecx
+    ; start
+    push edx
+    ; array
+    push eax
     call quick_sort
+    ; clear stack
     add esp, 12
 
 stop:
