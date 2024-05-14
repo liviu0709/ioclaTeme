@@ -22,6 +22,7 @@ quick_sort:
     cmp ebx, ecx
 
     jge stop
+    push ecx
     push ebx
     mov edx, ebx
 
@@ -63,49 +64,47 @@ skip:
 ; split array
     mov edx, ebx
     pop ebx
-    cmp ebx, 0
-    je nodec
-    dec ebx
-nodec:
+    pop ecx
+; check if array has more than 2 elems otherwise we finish
+    dec edx ; dont include pivot
+
+    cmp edx, ecx ; if we called the func with the same data we send to recursivity
+    ; just stop
+    je stop
+
+
+
+
     pusha
     push edx
     push ebx
-    push format_int1
+    push format_int
     call printf
     add esp, 12
     popa
 
-    inc ebx
-    cmp ebx, edx
-    je dont_sort
-    inc ebx
-    cmp ebx, edx
-    je dont_sort
-    dec ebx
-    dec ebx
-
-    push edx
-    push ebx
-    push eax
+    push edx ; stop
+    push ebx ; start
+    push eax ; array
     call quick_sort
     add esp, 12
 
-dont_sort:
     inc edx
+    inc edx ; dont include pivot
+
     pusha
     push ecx
     push edx
-    push format_int2
+    push format_int
     call printf
     add esp, 12
     popa
 
-    push ecx
-    push edx
+    push ecx ; stop
+    push edx ; start
     push eax
     call quick_sort
     add esp, 12
-
 
 stop:
     ;; restore the preserved registers
