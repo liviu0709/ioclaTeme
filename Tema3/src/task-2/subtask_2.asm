@@ -1,5 +1,6 @@
 ; subtask 2 - bsearch
 section .data
+    ; no solution found
     solution dd -1
 
 section .text
@@ -18,20 +19,29 @@ binary_search:
     ; ecx -> arr
     ; edx -> needle
 
-    mov eax, [ebp + 8] ; start
-    mov ebx, [ebp + 12] ; stop
+    ; start
+    mov eax, [ebp + 8]
+    ; stop
+    mov ebx, [ebp + 12]
 
     cmp eax, ebx
-    jg end ; start > stop
+    ; start > stop
+    jg end
 
-    mov edi, eax ; middle = start
-    add edi, ebx ; middle += stop
-    shr edi, 1 ; middle /= 2
+    ; middle = start
+    mov edi, eax
+    ; middle += stop
+    add edi, ebx
+    ; middle /= 2
+    shr edi, 1
 
-    cmp edx, [ecx + edi * 4] ; arr[mid] == needle
+    ; arr[mid] == needle
+    cmp edx, [ecx + edi * 4]
     jne unlucky
-    mov eax, edi ; save the solution
-    jmp end ; stop recursivity
+    ; save the solution
+    mov eax, edi
+    ; stop recursivity
+    jmp end
 
 unlucky:
     ; stop condition if no match found in start == end
@@ -40,24 +50,32 @@ unlucky:
     jmp skipp
 
 save_no_sol:
+    ; no solution found
     mov eax, -1
     jmp end
 
 skipp:
+    ; needle < arr[mid]
     cmp edx, [ecx + edi * 4]
-    jl left ; needle < arr[mid]
+    jl left
     ; right
     inc edi
-    push ebx ; end
-    push edi ; start
+    ; end
+    push ebx
+    ; start
+    push edi
     call binary_search
+    ; clear stack
     add esp, 8
     jmp end
 
 left:
-    push edi ; end
-    push eax ; start
+    ; end
+    push edi
+    ; start
+    push eax
     call binary_search
+    ; clear stack
     add esp, 8
 
     ;; restore the preserved registers

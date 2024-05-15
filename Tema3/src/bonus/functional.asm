@@ -57,11 +57,13 @@ reduce:
     ; rcx -> acc
     ; r8 -> f
 
+    ; init index
     mov r9, 0
 foor:
     cmp r9, rdx
     jge end_foor
 
+    ; load current elem
     mov rax, [rsi + 8 * r9]
     ; some registers need to be saved
     ; bcz they are modified
@@ -69,10 +71,13 @@ foor:
     push rdx
     push rdi
     push rsi
-    mov rsi, rax ; current elem
-    mov rdi, rcx ; acc
+    ; current elem
+    mov rsi, rax
+    ; acc
+    mov rdi, rcx
     call r8
-    mov rcx, rax ; save new acc
+    ; save new acc
+    mov rcx, rax
     pop rsi
     pop rdi
     pop rdx
@@ -82,7 +87,8 @@ foor:
 
     ; sa-nceapa festivalu'
 end_foor:
-    mov rax, rcx ; return solution
+    ; return solution
+    mov rax, rcx
     ;popaq
 
     leave

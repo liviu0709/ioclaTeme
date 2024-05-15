@@ -39,14 +39,17 @@ dfs:
     ; TODO: Implement the depth first search algorith, using the `expand`
     ; function to get the neighbours. When a node is visited, print it by
     ; calling `printf` with the format string in section .data.
-    mov eax, [ebp + 8] ; current node
-    mov ebx, [ebp + 12] ; expand function
+    ; current node
+    mov eax, [ebp + 8]
+    ; expand function
+    mov ebx, [ebp + 12]
 
     ; print current node
     pusha
     push eax
     push fmt_str
     call printf
+    ; clear stack
     add esp, 8
     popa
 
@@ -55,27 +58,36 @@ dfs:
 
     ; get neighboors
     push eax
-    call ebx ; expand call
+    ; expand call
+    call ebx
+    ; clear stack
     add esp, 4
     ; now eax has structure pointer
-    
-    mov ecx, 0 ; counter for
+
+    ; counter for
+    mov ecx, 0
 
 for:
-    cmp ecx, [eax] ; address of neighboors cnt
+    ; address of neighboors cnt
+    cmp ecx, [eax]
     jge for_completed
 
     ; get neighboor
-    mov edx, [eax + 4] ; load vector start
-    mov edx, [edx + 4 * ecx] ; get neighboor
+    ; load vector start
+    mov edx, [eax + 4]
+    ; get neighboor
+    mov edx, [edx + 4 * ecx]
     ; check if visited
     cmp dword [visited + 4 * edx], 1
     je skip_this
 
     ; recursive call
-    push ebx ; expand
-    push edx ; node
+    ; expand
+    push ebx
+    ; node
+    push edx
     call dfs
+    ; clear stack
     add esp, 8
 
 skip_this:
