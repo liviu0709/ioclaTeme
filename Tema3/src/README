@@ -1,0 +1,43 @@
+# Tema 3
+
+## Task 1
+Idee de rezolvare:
+- parcurgem sirul de 3 ori (pentru fiecare tip de paranteza)
+- cand gasim o paranteza deschisa crestem contorul
+- cand gasim o paranteza inchisa scadem contorul
+- daca contorul ajunge negativ pe parcurs nu e ok
+- daca la final este 0 e perfect
+
+## Task 2
+
+### Quick sort
+Idee de rezolvare:
+- folosind algoritmul clasic quicksort, acesta se implementeaza relativ usor in assembly
+
+### Binary search
+Idee de rezolvare:
+- spre deosebire de quick sort, aceasta functie foloseste fastcall. Astfel, primele 2 argumente ale functiei se gasesc tot timpul in ecx si edx, deci nu mai trebuie luate de pe stiva.
+- celelalte 2 argumente se obtin clasic de pe stiva
+- dupa obtinerea argumentelor, se poate implementa usor clasica cautare binara
+- pentru returnarea solutiei se foloseste registrul eax (evident)
+- avand in vedere ca fol pusha si popa pentru conservarea registrilor, valoarea salvata in eax la returnare s-ar pierde
+- astfel ne folosim de o variabila definita in .data si punem in ea val din eax inainte de popa
+- dupa popa mutam din variabila de mai sus valoarea inapoi in eax
+- returnam solutie cu succes
+
+## Task 3
+Idee de rezolvare:
+- vectorul vizitat din .bss functioneaza ca o variabila globala
+- astfel, la fiecare apel recursiv al functiei, se verifica daca nodul curent a mai fost vizitat, avand acces la vectorul vizitat modificat anterior
+- la parcurgerea unui nod, il marcam ca vizitat
+- apelam functia expand pentru obtinerea vecinilor
+- verificam daca vecinii au fost sau nu vizitati
+- daca nu au fost vizitati, apelam recursiv dfs
+
+## Bonus
+
+Avand in vedere implementarea anterioara a map si reduce in prima tema, tot ce trebuie facut se reduce la traducerea codului C in limbaj de asamblare. Astfel, tinem cont de urmatoarele modificari:
+
+- modul de transmitere al parametrilor pe 64 de biti este diferit fata de 32. Astfel, nu mai este necesar sa folosim stiva pentru ca argumentele sa gasesc in anumiti registri(pana la 6 arg, dar functiile noastre au mai putine oricum)
+- o alta diferenta evidenta este reprezentata de faptul ca pointerii nu mai au 4 bytes, ci 8. Astfel, inmultim cu 8 in loc de 4 la fiecare element dintr-un vector
+- ceva "interesant" este faptul ca registrul rdx se strica in momentul apelarii functiei de la reduce. De aceea, trebuie salvat pe stiva inainte de apel
