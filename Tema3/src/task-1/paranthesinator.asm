@@ -3,15 +3,10 @@
 
 %include "../include/io.mac"
 
-section .data
-    format_str db "Formatul meu: %s WOW", 10, 0
-    format_chr db "Caracter: %c Final", 10, 0
-    format_int db "Size stiva: %d", 10, 0
-
 section .text
 ; int check_parantheses(char *str)
 global check_parantheses
-extern printf
+
 check_parantheses:
     push ebp
     mov ebp, esp
@@ -22,6 +17,7 @@ check_parantheses:
     mov ecx, 0
     ; cnt for stack size
     mov edi, 0
+
 for:
     xor edx, edx
     mov dl, [ebx + ecx]
@@ -29,123 +25,84 @@ for:
     cmp edx, 0
     je finish
 
-
-    ; verific (
-    ; xor edx, edx
+    ; check (
     mov dl, [ebx + ecx]
-    ; (
-    cmp dl, 40
+    cmp dl, '('
     jne skip1
-
-    ; push ecx
-    ; push edx
-    ; push format_chr
-    ; call printf
-    ; pop eax
-    ; pop edx
-    ; pop ecx
-
     inc edi
     push edx
-skip1:
 
-    ; verific )
-    cmp dl, 41
+skip1:
+    ; check )
+    cmp dl, ')'
     jne skip2
     dec edi
     ; if () closed bad
     cmp edi, -1
     je fail
-    xor edx, edx
     pop edx
-
-    ; push ecx
-    ; push edx
-    ; push format_chr
-    ; call printf
-    ; pop eax
-    ; pop edx
-    ; pop ecx
-
-    ; sper ca gasesc ( pe stiva
-    cmp dl, 40
+    ; i want ( on stack
+    cmp dl, '('
     jne fail
-skip2:
 
-    ; verific [
-    ; xor edx, edx
+skip2:
+    ; check [
     mov dl, [ebx + ecx]
-    ; [
     cmp dl, '['
     jne skip3
     push edx
     inc edi
 
 skip3:
-    ; verific ]
-    ; xor edx, edx
+    ; check ]
     mov dl, [ebx + ecx]
-    ; ]
     cmp dl, ']'
     jne skip4
     dec edi
+    ; if [] closed bad
     cmp edi, -1
     je fail
     pop edx
-    ; sper ca gasesc [ pe stiva
+    ; i want [ on stack
     cmp dl, '['
     jne fail
 
 skip4:
-    ; verific {
-    ; xor edx, edx
+    ; check {
     mov dl, [ebx + ecx]
-    ; {
     cmp dl, '{'
     jne skip5
     inc edi
     push edx
 
-
 skip5:
-    ; verific }
-    ; xor edx, edx
+    ; check }
     mov dl, [ebx + ecx]
-    ; }
     cmp dl, '}'
     jne skip6
     dec edi
+    ; if {} closed bad
     cmp edi, -1
     je fail
     pop edx
-    ; sper ca gasesc { pe stiva
+    ; i want { on stack
     cmp dl, '{'
     jne fail
-skip6:
 
+skip6:
     inc ecx
     jmp for
-finish:
 
-    ; check if () closed succesfully
+finish:
+    ; check if all paranthesis closed succesfully
     cmp edi, 0
     jne fail
-    ; index for
-
     jmp succes
 
-    ; [
-    ; cmp dl, 91
-
-    ; verific {
-
-    ; {
-    ; cmp dl, 123
-
-    ; sa-nceapa concursul
 fail:
-
+    ; check if stack empty
     cmp edi, 0
+    ; if its not empty, clear it
     jle fail_final
     dec edi
     pop eax
@@ -156,11 +113,12 @@ fail_final:
     ; return fail
     mov eax, 1
     jmp skip_suc
+
 succes:
     popa
     ; return succes
     mov eax, 0
+
 skip_suc:
     leave
-
     ret
