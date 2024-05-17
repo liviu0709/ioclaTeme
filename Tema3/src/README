@@ -1,12 +1,25 @@
 # Tema 3
 
 ## Task 1
-Idee de rezolvare:
+Idee de rezolvare: (DEPRECATED)
 - parcurgem sirul de 3 ori (pentru fiecare tip de paranteza)
 - cand gasim o paranteza deschisa crestem contorul
 - cand gasim o paranteza inchisa scadem contorul
 - daca contorul ajunge negativ pe parcurs nu e ok
 - daca la final este 0 e perfect
+
+Idee de rezolvare dupa ce am observat ca testele nu verifica inclusiv exemplul din cerinta:
+Ne folosim de stiva, parcurgand sirul o singura data:
+
+- daca gasim o paranteza deschisa, o punem pe stiva
+- daca gasim o paranteza inchisa, verificam daca ultima paranteza deschisa este de acelasi tip
+- luam un contor pentru numarul de caractere de pe stiva
+- astfel daca ajungem la 0 si trb sa dam pop, nu da segfault!
+- daca la final este diferit de 0, nu este bine
+
+PS:
+Dupa implementarea cu push, verificand doar inchiderea corecta a parantezelor (), trecea toate testele...
+
 
 ## Task 2
 
