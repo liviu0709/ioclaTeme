@@ -1,0 +1,8 @@
+Pentru:
+n = 4
+v = 1, 2, 3, 4
+
+Output-ul așteptat este:
+1024
+1 2 3 4 
+4 16 64 256 
