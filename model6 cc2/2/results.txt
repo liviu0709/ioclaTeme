@@ -1,0 +1,7 @@
+Pentru rularea executabilului cu:
+./file aaa 2 3 b 1
+
+Output-ul așteptat este:
+3
+2 3 1 
+231
