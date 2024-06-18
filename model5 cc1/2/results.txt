@@ -1,0 +1,35 @@
+a), b)
+Pentru:
+n = 2
+v = 0xa, 0xb
+
+sau
+
+n = 1
+v = 0x164
+
+sau
+
+n = 1
+v = 0x64000000
+
+Output-ul așteptat este:
+0xa 0xb 
+0.0.0.10
+
+sau
+
+0x164 
+0.0.1.100
+
+sau
+
+0x64000000 
+100.0.0.0
+
+c)
+Pentru:
+n = 5
+
+Output-ul așteptat este:
+5
